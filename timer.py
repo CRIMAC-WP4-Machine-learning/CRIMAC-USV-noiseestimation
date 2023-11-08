@@ -7,7 +7,7 @@ from tqdm import tqdm
 dt = 10 # seconds per treatment should be 60 sec
 speed = [str(_speed)+' knots' for _speed in range(2, 10, 2)] 
 headingtowind = [str(_headingtowind)+' degrees' for
-                 _headingtowind in range(0, 360, 45)]
+                 _headingtowind in range(0, 181, 45)]
 eksettings = ['CW passive', 'CW active', 'FM passive', 'FM active']
 now = datetime.now().isoformat()
 logfile = 'Logfile'+now+'.txt'
