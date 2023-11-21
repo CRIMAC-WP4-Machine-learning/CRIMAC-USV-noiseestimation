@@ -2,18 +2,60 @@ import pandas as pd
 import json
 import matplotlib.pyplot as plt
 import datetime
+import os
+import numpy as np
 
-noisedata = 'EchogramPlot_T20051118_06201006-20051118_11251826.json'
+dr = '/mnt/c/DATA/cruisedata/S2023301002_PFRIGG_10318/ACOUSTIC/LSSS/KORONA/'
+noisedata = [fil for fil in os.listdir(dr) if fil.split('.')[1]=='json']
+DF = pd.DataFrame()
 
-with open(noisedata, 'r') as my_file:
-    data = json.load(my_file)
+for i in range(len(noisedata)):
+    print(i)
+    with open(dr+noisedata[i], 'r') as my_file:
+        data = json.load(my_file)
+        time = [datetime.datetime.fromtimestamp(_t) for _t in data["time"]]
+        frames = [pd.DataFrame(index=time, data={'noiseAverage': data["noiseAverage"]}),
+                  pd.DataFrame(index=time, data={'noiseUpperLimit': data["noiseUpperLimit"]})]
+        df = pd.concat(frames, axis=1)
+        print(noisedata[i].split('_'))
+        df['platform'] = noisedata[i].split('_')[0]
+        df['oktagon'] = noisedata[i].split('_')[1]
+        df['frequency'] = noisedata[i].split('_')[2].split('Echogram')[0][:-2]
+        df['mode'] = noisedata[i].split('_')[2].split('Echogram')[0][-2:]
+        # Add the timing information
+        
+    DF = pd.concat([DF, df], axis=0)
 
-time = [datetime.datetime.fromtimestamp(_t) for _t in data["time"]]
+DF['noiseAverage_linear'] = 10**(DF['noiseAverage']/10)
+DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
 
-frames = [pd.DataFrame(index=time, data={'noiseAverage': data["noiseAverage"]}),
-          pd.DataFrame(index=time, data={'noiseUpperLimit': data["noiseUpperLimit"]})]
-df = pd.concat(frames, axis=1)
-
-df.keys()
-df.plot()
+DF[DF['mode'] == 'CW'].groupby(['frequency'])['noiseAverage'].plot(legend=True)
 plt.show()
+
+DFm = DF[(DF['mode'] == 'CW')&(DF['frequency'] == '38')].groupby([
+    'platform', 'oktagon', 'frequency'])[
+        'noiseAverage_linear'].mean().transform(lambda x: 10*np.log10(x))
+
+DFm.plot()
+plt.show()
+
+'''
+# Read FM noise specter
+import xml
+import xmltodict
+
+FM = pd.read_xml('NoiseSpecter.xml')
+
+with open('NoiseSpecter.xml','r') as NoiseSpecter:
+    #read xml content from the file
+    xml_content = NoiseSpecter.read()
+    print("XML content is:")
+    print(xml_content)
+
+#change xml format to ordered dict
+#ordered_dict = xmltodict.parse(xml_content)
+
+#val = ordered_dict['NoiseSpecter']['channel'][1]['entry']['@value']
+
+# <channel channelIndex="2">
+'''
