@@ -29,10 +29,10 @@ for i in range(len(noisedata)):
 DF['noiseAverage_linear'] = 10**(DF['noiseAverage']/10)
 DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
 
-DF[DF['mode'] == 'CW'].groupby(['frequency'])['noiseAverage'].plot(legend=True)
+DF[DF['mode'] == 'CW'].groupby(['frequency', 'platform'])['noiseAverage'].plot(legend=True)
 plt.show()
 
-DFm = DF[(DF['mode'] == 'CW')&(DF['frequency'] == '38')].groupby([
+DFm = DF[(DF['mode'] == 'CW') & (DF['frequency'] == '38')].groupby([
     'platform', 'oktagon', 'frequency'])[
         'noiseAverage_linear'].mean().transform(lambda x: 10*np.log10(x))
 
