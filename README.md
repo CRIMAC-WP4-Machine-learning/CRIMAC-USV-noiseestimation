@@ -13,4 +13,5 @@
 |Leg|1,..., 8| 1..8 for octagon, 1..2 for transect |
 |RPM|Off, #RPM| The engine RPM | 
 |Speed| #speed| the measured speed from sensors |
-
+|Starttime| time| Time for start of treatment |
+|Stoptime| time | Time for end of treatment |
