@@ -18,16 +18,24 @@ for i in range(len(noisedata)):
                   pd.DataFrame(index=time, data={'noiseUpperLimit': data["noiseUpperLimit"]})]
         df = pd.concat(frames, axis=1)
         print(noisedata[i].split('_'))
-        df['platform'] = noisedata[i].split('_')[0]
-        df['oktagon'] = noisedata[i].split('_')[1]
-        df['frequency'] = noisedata[i].split('_')[2].split('Echogram')[0][:-2]
-        df['mode'] = noisedata[i].split('_')[2].split('Echogram')[0][-2:]
+        df['Platform'] = noisedata[i].split('_')[0]
+        df['Location'] = noisedata[i].split('_')[1]
+        df['Frequency'] = noisedata[i].split('_')[2].split('Echogram')[0][:-2]
+        df['Mode'] = noisedata[i].split('_')[2].split('Echogram')[0][-2:]
         # Add the timing information
         
     DF = pd.concat([DF, df], axis=0)
 
+#DF[(DF['Location'] == 'oktagon1'),'Location'] =  'Malangen'
+#DF[DF['Location'] == 'oktagon2','Location'] =  'Austerhola'
+
 DF['noiseAverage_linear'] = 10**(DF['noiseAverage']/10)
 DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
+
+# Read timeings for each transect
+# DF['leg'] = 
+# DF['noiseAverage_linear']
+
 
 DF[DF['mode'] == 'CW'].groupby(['frequency', 'platform'])['noiseAverage'].plot(legend=True)
 plt.show()
