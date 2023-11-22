@@ -1,8 +1,8 @@
 # CRIMAC-USV-noiseestimation
 
 
-|Variable|Values|
-|-|-|
+|Variable|Values|Description|
+|-|-|-|
 |Frequency | 18, 38, 120, 200, 333 | Echosounder channel |
 |Mode|CW,FM| Frequency modulated or contious wave |
 |Experiment|Dataquality, Towing, RPMtest, Noisetest| The different experiments
