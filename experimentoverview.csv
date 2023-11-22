@@ -1,5 +1,5 @@
 Platform;Starttime;Stoptime;Sea state;Location;Experiment
-Frigg;2023-11-17T15:53:29.113Z;2023-11-17T22:26:54.053Z;02.mar;Malangen;Dataquality
+Frigg;2023-11-17T15:53:29.113Z;2023-11-17T22:26:54.053Z;3;Malangen;Dataquality
 Frigg;2023-11-18T09:51:05.010Z;2023-11-18T16:44:40.770Z;4;Austerhola;Dataquality
 GOSars;2023-11-18T16:44:40.770Z;2023-11-18T18:43:22.840Z;4;Austerhola;Dataquality
 Frigg;2023-11-18T19:06:32.588Z;2023-11-18T19:17:01.468Z;4;Austerhola;Dataquality
