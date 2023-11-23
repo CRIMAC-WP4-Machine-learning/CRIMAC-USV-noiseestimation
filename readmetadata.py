@@ -63,10 +63,12 @@ d0['Stoptime'] = pd.to_datetime(d0['Stoptime']).dt.strftime('%Y/%m/%d %H:%M')
 print(tabulate(d0, headers = 'keys', tablefmt = 'plain'))
 
 # Sanity checks
-df.columns
-df.groupby(['Experiment', 'Platform', 'Location', 'Coverage'])['Starttime'].plot(legend='true',x='Starttime',y='Starttime')
-plt.show()
 
 df.groupby(['Experiment', 'Speedbin', 'Platform', 'Location'])[
-    'Starttime'].plot(legend='true', x='Starttime', y='Starttime', style=".")
+    'Starttime'].plot(legend='true', style=".")
+plt.show()
+
+df['difftime']=df['Stoptime']-df['Starttime']
+df.groupby(['Experiment', 'Speedbin', 'Platform', 'Location'])[
+    'difftime'].plot(legend='true', style=".")
 plt.show()

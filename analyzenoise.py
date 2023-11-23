@@ -37,7 +37,7 @@ DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
 # DF['noiseAverage_linear']
 
 
-DF[DF['mode'] == 'CW'].groupby(['frequency', 'platform'])['noiseAverage'].plot(legend=True)
+DF[DF['Mode'] == 'CW'].groupby(['Frequency', 'Platform'])['noiseAverage'].plot(legend=True)
 plt.show()
 
 DFm = DF[(DF['mode'] == 'CW') & (DF['frequency'] == '38')].groupby([
