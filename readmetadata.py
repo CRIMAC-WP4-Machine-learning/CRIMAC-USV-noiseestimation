@@ -1,15 +1,12 @@
 import pandas as pd
-import json
 import matplotlib.pyplot as plt
-import datetime
-import os
 import numpy as np
 from tabulate import tabulate 
 
 
 def cleanmetadata(fil):
     # Read tagged data for Frigg during Malangen octagons
-    df = pd.read_csv('./data_reader_tr23/2023-11-17.csv', sep=',')
+    df = pd.read_csv(fil, sep=',')
     df = df.rename(columns={"sog": "Speed", "leg": "Leg", "coverage": "Coverage", "time": "Starttime"})
     df['Starttime'] = pd.to_datetime(df['Starttime'])
     df['Coverage'] = df['Coverage'].astype('int')
@@ -32,7 +29,7 @@ fr_ml = cleanmetadata('./data_reader_tr23/2023-11-17.csv')
 fr_ml['Location'] = 'Malangen'
 fr_ml['Platform'] = 'Frigg'
 # Read tagged data for Frigg during Austehola octagons
-fr_au = cleanmetadata('./data_reader_tr23/2023-11-17.csv')
+fr_au = cleanmetadata('./data_reader_tr23/2023-11-18.csv')
 fr_au['Location'] = 'Austehola'
 fr_au['Platform'] = 'Frigg'
 
@@ -42,21 +39,34 @@ fr_au['Platform'] = 'Frigg'
 
 # Read metadata for all experiments except octagons
 d1 = pd.read_csv('experimenttiming.csv', sep=';')
-d1['Starttime'] = pd.to_datetime(d1['startTime'])
-d1['Stoptime'] = pd.to_datetime(d1['endTime'])
+d1['Starttime'] = pd.to_datetime(d1['startTime']).dt.tz_localize(None)
+d1['Stoptime'] = pd.to_datetime(d1['endTime']).dt.tz_convert(None)
+
 dropcol = ['id', 'name', 'activityTypeId', 'activityTypeName',
            'activityTypeCode', 'activityMainGroupId', 'activityMainGroupName',
            'superstationNumber', 'localstationNumber', 'activityNumber',
            'startTime', 'endTime', 'startLat', 'startLon', 'endLat', 'endLon',
-           'comment', 'true_wind_dir']
+           'comment']
 d1 = d1.drop(dropcol, axis=1)
+d1.columns
 
 # Merge dataframes
-DF = pd.concat([d1, fr_au, fr_ml], axis=0)
-DF.columns
+df = pd.concat([fr_ml, fr_au, d1], axis=0).drop_duplicates().reset_index(drop=True)
+
+#df = df.astype({"Starttime": datetime64, "Stoptime": datetime64})
+#df['Starttime'] = pd.to_datetime(df['Starttime'])
 
 # Plot overview of experiment
 d0 = pd.read_csv('experimentoverview.csv', sep=';')
 d0['Starttime'] = pd.to_datetime(d0['Starttime']).dt.strftime('%Y/%m/%d %H:%M')
 d0['Stoptime'] = pd.to_datetime(d0['Stoptime']).dt.strftime('%Y/%m/%d %H:%M')
 print(tabulate(d0, headers = 'keys', tablefmt = 'plain'))
+
+# Sanity checks
+df.columns
+df.groupby(['Experiment', 'Platform', 'Location', 'Coverage'])['Starttime'].plot(legend='true',x='Starttime',y='Starttime')
+plt.show()
+
+df.groupby(['Experiment', 'Speedbin', 'Platform', 'Location'])[
+    'Starttime'].plot(legend='true', x='Starttime', y='Starttime', style=".")
+plt.show()
