@@ -39,8 +39,8 @@ fr_0 = pd.DataFrame({'Starttime': '2023-11-18T19:06:32.588Z', 'Coverage': 1, 'Le
                      'Experiment': 'Dataquality', 'Speedbin': '0',
                      'Headingtowind': 'NaN', 'Location': 'Austerhola',
                      'Platform': 'Frigg'}, index=[0])
-fr_0['Starttime'] = pd.to_datetime(fr_0['Starttime'])
-fr_0['Stoptime'] = pd.to_datetime(fr_0['Stoptime'])
+fr_0['Starttime'] = pd.to_datetime(fr_0['Starttime']).dt.tz_localize(None)
+fr_0['Stoptime'] = pd.to_datetime(fr_0['Stoptime']).dt.tz_localize(None)
 
 # Read tagged data for GOS during Malangen Octagons
 
@@ -61,19 +61,21 @@ d1.columns
 
 # Get the metadata for GOS for the Lyngsfjorden experiment (copy the Frigg data)
 gos = d1[d1['Experiment']=='Dataquality']
-gos['Platform']='GOSars'
-gos['RPM']='Fixed'
+gos['Platform'] = 'GOSars'
+gos['RPM'] = 'Fixed'
 
 # Merge dataframes
 df = pd.concat([fr_ml, fr_au, fr_0, gos, d1], axis=0).drop_duplicates().reset_index(drop=True)
-df.columns
-
-df.to_pickle('readmetadata.pk')
-
-#df = df.astype({"Starttime": datetime64, "Stoptime": datetime64})
-#df['Starttime'] = pd.to_datetime(df['Starttime'])
 
 print(tabulate(df, headers = 'keys', tablefmt = 'plain'))
+
+# Change data types
+df = df.convert_dtypes()
+df['Speedbin'] = pd.to_numeric(df['Speedbin'])
+df['Headingtowind'] = pd.to_numeric(df['Headingtowind'], errors='coerce')
+df['true_wind_dir'] = pd.to_numeric(df['true_wind_dir'], errors='coerce')
+
+df.to_pickle('readmetadata.pk')
 
 # Plot overview of experiment
 d0 = pd.read_csv('experimentoverview.csv', sep=';')
