@@ -68,6 +68,8 @@ DF.loc[(DF['Location'] == 'Octagon3')&(DF['Platform'] == 'GOSars'), 'Location'] 
 DF.loc[(DF['Location'] == 'Octagon1')&(DF['Platform'] == 'Frigg'), 'Location'] =  'Malangen'
 DF.loc[(DF['Location'] == 'Octagon2')&(DF['Platform'] == 'Frigg'), 'Location'] =  'Austerhola'
 
+DF.to_pickle('analyzenoise.pk')
+
 DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby(['Platform','Location'])['noiseAverage'].plot(legend=True)
 plt.show()
 

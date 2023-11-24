@@ -4,10 +4,10 @@
 Run the readnavigation.py to process the GOS navigation data.
 
 ## GOS and Frigg time intervals per treatment
-Run readmetadata.py to combine the data sets to a pandas dataframe.
+Run readmetadata.py to prepare time intervals and treatments to a pandas dataframe. Writes the result to a pickle file readmetadata.pk
 
 ## REad the noise files from LSSS
-Run analyzenoise.py
+Run analyzenoise.py. This generates a Pandas data frame for the noise estimates as a function of time. Writes the results to a pickle file analyzenoise.pk
 
 
 
