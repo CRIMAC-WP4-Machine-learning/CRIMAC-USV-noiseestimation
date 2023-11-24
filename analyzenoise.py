@@ -42,6 +42,10 @@ for i in range(len(noisedata)):
                 nn = 1
                 if filename[2] == 'towing':
                     nnn = 1
+            # For some stupid reason some files contain __ instead of _
+            # Frigg_Octagon2_noise__333FM_EchogramPlot_T20231118_09502464-20231118_16281591
+            if (filename[0] == 'Frigg') & (filename[1] == 'Octagon2'):
+                nn += 1
             df['Frequency'] = filename[2+nn+nnn].split('Echogram')[0][:-2]
             df['Mode'] = filename[2+nn+nnn].split('Echogram')[0][-2:]
             # Concatenate
@@ -58,10 +62,10 @@ DF['noiseAverage_linear'] = 10**(DF['noiseAverage']/10)
 DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
 
 # Change to location instead of the inconsistent naming
-#DF.loc[(DF['Location'] == 'Octagon1'), 'Location'] =  'Malangen'
-#DF.loc[DF['Location'] == 'Octagon2', 'Location'] =  'Austerhola'
-#DF.loc[DF['Location'] == 'Octagon3', 'Location'] =  'Austerhola'
-#DF.loc[DF['Location'] == 'Drifting', 'Location'] =  'Austerhola'
+# DF.loc[(DF['Location'] == 'Octagon1'), 'Location'] =  'Malangen'
+# DF.loc[DF['Location'] == 'Octagon2', 'Location'] =  'Austerhola'
+# DF.loc[DF['Location'] == 'Octagon3', 'Location'] =  'Austerhola'
+# DF.loc[DF['Location'] == 'Drifting', 'Location'] =  'Austerhola'
 
 DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby(['Platform','Location'])['noiseAverage'].plot(legend=True)
 plt.show()
