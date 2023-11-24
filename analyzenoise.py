@@ -62,10 +62,11 @@ DF['noiseAverage_linear'] = 10**(DF['noiseAverage']/10)
 DF['noiseUpperLimit_linear'] = 10**(DF['noiseUpperLimit']/10)
 
 # Change to location instead of the inconsistent naming
-# DF.loc[(DF['Location'] == 'Octagon1'), 'Location'] =  'Malangen'
-# DF.loc[DF['Location'] == 'Octagon2', 'Location'] =  'Austerhola'
-# DF.loc[DF['Location'] == 'Octagon3', 'Location'] =  'Austerhola'
-# DF.loc[DF['Location'] == 'Drifting', 'Location'] =  'Austerhola'
+DF.loc[(DF['Location'] == 'Octagon1')&(DF['Platform'] == 'GOSars'), 'Location'] =  'Austerhola'
+DF.loc[(DF['Location'] == 'Octagon2')&(DF['Platform'] == 'GOSars'), 'Location'] =  'Austerhola'
+DF.loc[(DF['Location'] == 'Octagon3')&(DF['Platform'] == 'GOSars'), 'Location'] =  'Malangen'
+DF.loc[(DF['Location'] == 'Octagon1')&(DF['Platform'] == 'Frigg'), 'Location'] =  'Malangen'
+DF.loc[(DF['Location'] == 'Octagon2')&(DF['Platform'] == 'Frigg'), 'Location'] =  'Austerhola'
 
 DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby(['Platform','Location'])['noiseAverage'].plot(legend=True)
 plt.show()
