@@ -75,6 +75,7 @@ df['Speedbin'] = pd.to_numeric(df['Speedbin'])
 df['Headingtowind'] = pd.to_numeric(df['Headingtowind'], errors='coerce')
 df['true_wind_dir'] = pd.to_numeric(df['true_wind_dir'], errors='coerce')
 
+df = df.sort_values(by=['Starttime'])
 df.to_pickle('readmetadata.pk')
 
 # Plot overview of experiment
