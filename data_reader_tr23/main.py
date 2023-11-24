@@ -5,16 +5,18 @@ import filter
 import annotation_obs as obs
 
 ###FILES###
-AIRMAR_PATH=[r"C:\Users\rabear\OneDrive - NTNU\Campaigns\FriggTromsø2023\day4\weather\20231117_weather_report.log.1", r"C:\Users\rabear\OneDrive - NTNU\Campaigns\FriggTromsø2023\day5\weather\20231118_weather_report.log.1"]
-OBS_PATH=[r"C:\Users\rabear\OneDrive - NTNU\Campaigns\FriggTromsø2023\day4\obs\20231117_navigation.log.1",r"C:\Users\rabear\OneDrive - NTNU\Campaigns\FriggTromsø2023\day5\obs\20231118_navigation.log.1"]
+AIRMAR_PATH=["./friggdata/20231117_weather_report.log.1", "./friggdata/20231118_weather_report.log.1"]
+OBS_PATH=["./friggdata/20231117_navigation.log.1","./friggdata/20231118_navigation.log.1"]
 #OBS_PATH=r"C:\Users\rabear\OneDrive - NTNU\Campaigns\FriggTromsø2023\day5"
-MODE=0 #0=single file read, 1 = multiple
-EXP=1
+EXP=1 #ADJUST THIS TO GENERATE OUTPUTS PER EXPERIMENT
 RANGE = [("2023-11-17T15:45:29",'2023-11-17T22:30:44'), ("2023-11-18T09:51:05",'2023-11-18T16:27:00')]
 
 ###FILTER###
 WINDOW=1501 #Filterkernel
-EXPERIMENT_LENGTH=60*3 #[s]
+EXPERIMENT_LENGTH=60*2 #[s]
+THRESH=25
+DERIV=10
+WRAP=True
 
 ###PLOTTING###
 SAVE=True
@@ -49,7 +51,7 @@ def run():
     #Get leg timestamps based on heading
     time = annotation_obs.data["time"]
     cog = annotation_obs.data["6:cog"]
-    time_s, values_s = filter.filter_periods(cog, time, WINDOW, EXPERIMENT_LENGTH)
+    time_s, values_s = filter.filter_periods(cog, time, WINDOW, EXPERIMENT_LENGTH, THRESH, DERIV, WRAP)
 
     #Compute average values per leg
     annotation_obs.filter_heading(WINDOW)

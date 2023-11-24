@@ -71,12 +71,13 @@ def remove_wrap_360(degree_vector):
                 result_vector.append(360)
     return result_vector
 
-def filter_heading(heading_array, window,  mode='median'):
+def filter_heading(heading_array, window, wrap, mode='median'):
     cog = heading_array
 
     #cog = [tools.radians_to_degrees(s) for s in cog]
-    cog = np.rad2deg(cog)
-    cog = np.unwrap(cog, 340)
+    if wrap:
+        cog = np.rad2deg(cog)
+        cog = np.unwrap(cog)
     window_size = window
     if mode == 'median':
         cog = filter_median(cog, window_size)
@@ -84,7 +85,8 @@ def filter_heading(heading_array, window,  mode='median'):
         cog = filter_angles(cog, window_size)
     #cog = [tools.wrap_degrees(c) for c in cog]
     #cog = remove_wrap_360(cog)
-    cog =np.mod(cog, 360)
+    if wrap:
+        cog =np.mod(cog, 360)
     return cog
 
 def detect_step(values):
@@ -107,18 +109,41 @@ def detect_step(values):
     plt.plot((step_indx, step_indx), (dary_step[step_indx] / 10, 0), 'r')
     return step_indx
 
-def filter_periods(values, time, window, period, plot_set=False):
+def filter_periods(values, time, window, period, thresh, deriv, wrap=True,plot_set=True, exp=-1, platform="none"):
     '''Takes noisy step signal. Returns list of timestamps of the periods
     '''
     #Thou shalt not adjust the magic numbers
     values_orig = values
-    values=filter_heading(values, window)
-    significant_changes = np.where(np.abs(np.diff(np.unwrap(values, 340),10)) > 75)[0]
+    values=filter_heading(values, window, wrap)
+    significant_changes = np.where(np.abs(np.diff(values,deriv)) > thresh)[0]
     if plot_set:
-        plt.plot(time[:-10], np.abs(np.diff(values,10)))
+        plt.plot(time[:-deriv], np.abs(np.diff(values,deriv)))
         plt.plot(time,values)
-        plt.plot(time[significant_changes], np.array(values)[significant_changes], marker='o')
+        plt.plot(np.array(time)[significant_changes], np.array(values)[significant_changes], marker='o')
         plt.show()
     peaks = remove_redundant_indices(time, significant_changes, time_period=period)
     print(peaks)
-    return time[peaks], np.array(values_orig)[peaks]
+    #prepend first element
+    print(len(peaks))
+    #peaks =np.insert(peaks,0,0)
+    if exp == 0 and platform == "gosars":
+        peaks = np.insert(-3,4000)
+    peaks=np.append(peaks, len(time)-1)
+    print(len(peaks))
+    return np.array(time)[peaks], np.array(values_orig)[peaks]
+
+# def filter_periods(values, time, window, period, plot_set=True):
+#     '''Takes noisy step signal. Returns list of timestamps of the periods
+#     '''
+#     #Thou shalt not adjust the magic numbers
+#     values_orig = values
+#     values=filter_heading(values, window)
+#     significant_changes = np.where(np.abs(np.diff(values,10)) > 20)[0]
+#     if plot_set:
+#         plt.plot(time[:-10], np.abs(np.diff(values,10)))
+#         plt.plot(time,values)
+#         plt.plot(np.array(time)[significant_changes], np.array(values)[significant_changes], marker='o')
+#         plt.show()
+#     peaks = remove_redundant_indices(time, significant_changes, time_period=period)
+#     print(peaks)
+#     return np.array(time)[peaks], np.array(values_orig)[peaks]
