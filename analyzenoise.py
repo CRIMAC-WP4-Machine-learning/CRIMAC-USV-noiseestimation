@@ -72,6 +72,12 @@ DF.loc[(DF['Location'] == 'Octagon1') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Malangen'
 DF.loc[(DF['Location'] == 'Octagon2') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
+DF.loc[(DF['Location'] == 'Drifting') & (
+    DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
+
+DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby([
+    'Platform', 'Location'])['noiseAverage'].plot(legend=True)
+plt.show()
 
 DF = DF.reset_index()
 DF = DF.rename(columns = {'index': 'Time'})
@@ -79,9 +85,6 @@ DF = DF.sort_values(by=['Time'])
 
 DF.to_pickle('analyzenoise.pk')
 
-DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby([
-    'Platform', 'Location'])['noiseAverage'].plot(legend=True)
-plt.show()
 
 '''
 DFm = DF[(DF['mode'] == 'CW') & (DF['frequency'] == '38')].groupby([

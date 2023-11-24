@@ -7,7 +7,8 @@ from tabulate import tabulate
 def cleanmetadata(fil):
     # Read tagged data for Frigg during Malangen octagons
     df = pd.read_csv(fil, sep=',')
-    df = df.rename(columns={"sog": "Speed", "leg": "Leg", "coverage": "Coverage", "time": "Starttime"})
+    df = df.rename(columns={"sog": "Speed", "leg": "Leg",
+                            "coverage": "Coverage", "time": "Starttime"})
     df['Starttime'] = pd.to_datetime(df['Starttime'])
     df['Coverage'] = df['Coverage'].astype('int')
     # Add stop time based on previous start time
@@ -23,28 +24,50 @@ def cleanmetadata(fil):
     df = df.drop(['cog', 'index'], axis=1)
     return df
 
+'''
+2023-11-17.csv
+2023-11-18.csv
+2023-11-18gosars.csv
+2023-11-18gosars0_manual_anotation.csv
+2023-11-21gosars1_manual_annoation.csv
+2023-11-21gosars3_manual_annotation.csv
+'''
 
 # Read tagged data for Frigg during Malangen octagons
-fr_ml = cleanmetadata('./data_reader_tr23/2023-11-17.csv')
+fr_ml = cleanmetadata('./data_reader_tr23/output/2023-11-17.csv')
 fr_ml['Location'] = 'Malangen'
 fr_ml['Platform'] = 'Frigg'
+
 # Read tagged data for Frigg during Austehola octagons
-fr_au = cleanmetadata('./data_reader_tr23/2023-11-18.csv')
-fr_au['Location'] = 'Austehola'
+fr_au = cleanmetadata('./data_reader_tr23/output/2023-11-18.csv')
+fr_au['Location'] = 'Austerhola'
 fr_au['Platform'] = 'Frigg'
 
 # Add drifting part for Frigg
-fr_0 = pd.DataFrame({'Starttime': '2023-11-18T19:06:32.588Z', 'Coverage': 1, 'Leg': 1, 'Speed': 0,
-                     'true_wind_dir': 'NaN', 'Stoptime': '2023-11-18T19:17:01.468Z',
-                     'Experiment': 'Dataquality', 'Speedbin': '0',
-                     'Headingtowind': 'NaN', 'Location': 'Austerhola',
-                     'Platform': 'Frigg'}, index=[0])
-fr_0['Starttime'] = pd.to_datetime(fr_0['Starttime']).dt.tz_localize(None)
-fr_0['Stoptime'] = pd.to_datetime(fr_0['Stoptime']).dt.tz_localize(None)
+fr_au0 = pd.DataFrame({'Starttime': '2023-11-18T19:06:32.588Z', 'Coverage': 1,
+                       'Leg': 1, 'Speed': 0,
+                       'true_wind_dir': 'NaN',
+                       'Stoptime': '2023-11-18T19:17:01.468Z',
+                       'Experiment': 'Dataquality', 'Speedbin': '0',
+                       'Headingtowind': 'NaN', 'Location': 'Austerhola',
+                       'Platform': 'Frigg'}, index=[0])
+fr_au0['Starttime'] = pd.to_datetime(fr_au0['Starttime']).dt.tz_localize(None)
+fr_au0['Stoptime'] = pd.to_datetime(fr_au0['Stoptime']).dt.tz_localize(None)
 
-# Read tagged data for GOS during Malangen Octagons
+# Read tagged data for GOS during Austerola Octagons
+gos_au0 = cleanmetadata('./data_reader_tr23/output/2023-11-18gosars0_manual_anotation.csv')
+gos_au0['Location'] = 'Austerhola'
+gos_au0['Platform'] = 'GOSars'
 
 # Read tagged data for GOS during Austehola Octagons
+gos_au1 = cleanmetadata('./data_reader_tr23/output/2023-11-21gosars1_manual_annoation.csv')
+gos_au1['Location'] = 'Austerhola'
+gos_au1['Platform'] = 'GOSars'
+
+# Read tagged data for GOS during Malangen Octagons
+gos_ml = cleanmetadata('./data_reader_tr23/output/2023-11-21gosars3_manual_annotation.csv')
+gos_ml['Location'] = 'Malangen'
+gos_ml['Platform'] = 'GOSars'
 
 # Read metadata for all experiments except octagons
 d1 = pd.read_csv('experimenttiming.csv', sep=';')
@@ -56,16 +79,17 @@ dropcol = ['id', 'name', 'activityTypeId', 'activityTypeName',
            'superstationNumber', 'localstationNumber', 'activityNumber',
            'startTime', 'endTime', 'startLat', 'startLon', 'endLat', 'endLon',
            'comment']
-d1 = d1.drop(dropcol, axis=1)
-d1.columns
+frigg_ly = d1.drop(dropcol, axis=1)
+frigg_ly.columns
 
 # Get the metadata for GOS for the Lyngsfjorden experiment (copy the Frigg data)
-gos = d1[d1['Experiment']=='Dataquality']
-gos['Platform'] = 'GOSars'
-gos['RPM'] = 'Fixed'
+gos_ly = frigg_ly[frigg_ly['Experiment'] == 'Dataquality']
+gos_ly['Platform'] = 'GOSars'
+gos_ly['RPM'] = 'Fixed'
 
 # Merge dataframes
-df = pd.concat([fr_ml, fr_au, fr_0, gos, d1], axis=0).drop_duplicates().reset_index(drop=True)
+df = pd.concat([fr_ml, fr_au, gos_au0, fr_au0, frigg_ly, gos_ly, gos_au1, gos_ml], axis=0).drop_duplicates().reset_index(drop=True)
+fr_au.columns
 
 print(tabulate(df, headers = 'keys', tablefmt = 'plain'))
 
@@ -83,7 +107,7 @@ d0 = pd.read_csv('experimentoverview.csv', sep=';')
 d0['Starttime'] = pd.to_datetime(d0['Starttime']).dt.strftime('%Y/%m/%d %H:%M')
 d0['Stoptime'] = pd.to_datetime(d0['Stoptime']).dt.strftime('%Y/%m/%d %H:%M')
 print(tabulate(d0, headers = 'keys', tablefmt = 'plain'))
-print(tabulate(d0, headers = 'keys'))
+#print(tabulate(d0, headers = 'keys'))
 
 # Sanity checks
 fig, ax = plt.subplots()
