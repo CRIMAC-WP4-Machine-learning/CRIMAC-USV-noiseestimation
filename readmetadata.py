@@ -33,6 +33,15 @@ fr_au = cleanmetadata('./data_reader_tr23/2023-11-18.csv')
 fr_au['Location'] = 'Austehola'
 fr_au['Platform'] = 'Frigg'
 
+# Add drifting part for Frigg
+fr_0 = pd.DataFrame({'Starttime': '2023-11-18T19:06:32.588Z', 'Coverage': 1, 'Leg': 1, 'Speed': 0,
+                     'true_wind_dir': 'NaN', 'Stoptime': '2023-11-18T19:17:01.468Z',
+                     'Experiment': 'Dataquality', 'Speedbin': '0',
+                     'Headingtowind': 'NaN', 'Location': 'Austerhola',
+                     'Platform': 'Frigg'}, index=[0])
+fr_0['Starttime'] = pd.to_datetime(fr_0['Starttime'])
+fr_0['Stoptime'] = pd.to_datetime(fr_0['Stoptime'])
+
 # Read tagged data for GOS during Malangen Octagons
 
 # Read tagged data for GOS during Austehola Octagons
@@ -50,25 +59,44 @@ dropcol = ['id', 'name', 'activityTypeId', 'activityTypeName',
 d1 = d1.drop(dropcol, axis=1)
 d1.columns
 
+# Get the metadata for GOS for the Lyngsfjorden experiment (copy the Frigg data)
+gos = d1[d1['Experiment']=='Dataquality']
+gos['Platform']='GOSars'
+gos['RPM']='Fixed'
+
 # Merge dataframes
-df = pd.concat([fr_ml, fr_au, d1], axis=0).drop_duplicates().reset_index(drop=True)
+df = pd.concat([fr_ml, fr_au, fr_0, gos, d1], axis=0).drop_duplicates().reset_index(drop=True)
+df.columns
 
 #df = df.astype({"Starttime": datetime64, "Stoptime": datetime64})
 #df['Starttime'] = pd.to_datetime(df['Starttime'])
+
+print(tabulate(df, headers = 'keys', tablefmt = 'plain'))
 
 # Plot overview of experiment
 d0 = pd.read_csv('experimentoverview.csv', sep=';')
 d0['Starttime'] = pd.to_datetime(d0['Starttime']).dt.strftime('%Y/%m/%d %H:%M')
 d0['Stoptime'] = pd.to_datetime(d0['Stoptime']).dt.strftime('%Y/%m/%d %H:%M')
 print(tabulate(d0, headers = 'keys', tablefmt = 'plain'))
+print(tabulate(d0, headers = 'keys'))
 
 # Sanity checks
-
-df.groupby(['Experiment', 'Speedbin', 'Platform', 'Location'])[
+fig, ax = plt.subplots()
+df.groupby(['Location', 'Platform', 'Experiment', 'Speedbin'])[
     'Starttime'].plot(legend='true', style=".")
+ax.legend(title='(Location, Platform, Experiment, Speedbin)')
+plt.show()
+df.columns
+df['difftime'] = df['Stoptime']-df['Starttime']
+
+fig, ax = plt.subplots()
+df.groupby(['Location', 'Platform', 'Experiment', 'Speedbin'])[
+    'difftime'].plot(legend='true', style=".", ax=ax)
+ax.legend(title='(Location, Platform, Experiment, Speedbin)')
 plt.show()
 
-df['difftime']=df['Stoptime']-df['Starttime']
-df.groupby(['Experiment', 'Speedbin', 'Platform', 'Location'])[
-    'difftime'].plot(legend='true', style=".")
+fig, ax = plt.subplots()
+df.groupby(['Location', 'Platform', 'Experiment', 'Speedbin'])[
+    'Starttime'].plot(legend='true', style=".", ax=ax)
+ax.legend(title='(Location, Platform, Experiment, Speedbin)')
 plt.show()

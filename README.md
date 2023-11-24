@@ -1,5 +1,15 @@
 # CRIMAC-USV-noiseestimation
 
+## GOS Navigational data
+Run the readnavigation.py to process the GOS navigation data.
+
+## GOS and Frigg time intervals per treatment
+Run readmetadata.py to combine the data sets to a pandas dataframe.
+
+## REad the noise files from LSSS
+Run analyzenoise.py
+
+
 
 |Variable|Values|Description|
 |-|-|-|
