@@ -74,6 +74,7 @@ DF.loc[(DF['Location'] == 'Octagon2') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
 DF.loc[(DF['Location'] == 'Drifting') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
+DF.loc[DF['Location'] == 'RPMnoise','Location'] = 'Lyngsfjorden'
 
 DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby([
     'Platform', 'Location'])['noiseAverage'].plot(legend=True)

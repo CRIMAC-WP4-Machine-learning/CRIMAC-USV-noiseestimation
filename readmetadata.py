@@ -58,11 +58,13 @@ fr_au0['Stoptime'] = pd.to_datetime(fr_au0['Stoptime']).dt.tz_localize(None)
 gos_au0 = cleanmetadata('./data_reader_tr23/output/2023-11-18gosars0_manual_anotation.csv')
 gos_au0['Location'] = 'Austerhola'
 gos_au0['Platform'] = 'GOSars'
+gos_au0['Coverage'] = 0
 
 # Read tagged data for GOS during Austehola Octagons
 gos_au1 = cleanmetadata('./data_reader_tr23/output/2023-11-21gosars1_manual_annoation.csv')
 gos_au1['Location'] = 'Austerhola'
 gos_au1['Platform'] = 'GOSars'
+gos_au1['Coverage'] = 1
 
 # Read tagged data for GOS during Malangen Octagons
 gos_ml = cleanmetadata('./data_reader_tr23/output/2023-11-21gosars3_manual_annotation.csv')
@@ -80,7 +82,7 @@ dropcol = ['id', 'name', 'activityTypeId', 'activityTypeName',
            'startTime', 'endTime', 'startLat', 'startLon', 'endLat', 'endLon',
            'comment']
 frigg_ly = d1.drop(dropcol, axis=1)
-frigg_ly.columns
+frigg_ly['Coverage'] = frigg_ly['Coverage'] - 1
 
 # Get the metadata for GOS for the Lyngsfjorden experiment (copy the Frigg data)
 gos_ly = frigg_ly[frigg_ly['Experiment'] == 'Dataquality']
@@ -129,3 +131,4 @@ df.groupby(['Location', 'Platform', 'Experiment', 'Speedbin'])[
     'Starttime'].plot(legend='true', style=".", ax=ax)
 ax.legend(title='(Location, Platform, Experiment, Speedbin)')
 plt.show()
+df['Experiment'].unique()
