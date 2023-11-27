@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from tabulate import tabulate 
+from datetime import timedelta
 
 
 def cleanmetadata(fil):
@@ -92,6 +93,11 @@ gos_ly['RPM'] = 'Fixed'
 # Merge dataframes
 df = pd.concat([fr_ml, fr_au, gos_au0, fr_au0, frigg_ly, gos_ly, gos_au1, gos_ml], axis=0).drop_duplicates().reset_index(drop=True)
 fr_au.columns
+
+# Fix time errors:
+
+df['Starttime'] = df['Starttime'] + timedelta(hours=1)
+df['Stoptime'] = df['Stoptime'] + timedelta(hours=1)
 
 print(tabulate(df, headers = 'keys', tablefmt = 'plain'))
 

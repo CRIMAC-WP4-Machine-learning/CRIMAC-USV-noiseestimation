@@ -1,7 +1,22 @@
 # CRIMAC-USV-noiseestimation
 
+## time sync issues
+There is a problem with the time stamps. Frigg ran on local time and GOS on UTC, but the data seems to be ok. Probably something with python time zone handling that needs attention.
+Frigg.Malangen: 17.11.2023 16:52 - 23:26  Metadata: 15:45-22:15
+Frigg.Austerhola: 18.11.2023 10:53 - 17:28 Metadata: 09:51- 18:30
+Frigg.Austerhola.Drifting: 18.11.2023 20:06 - 20:17 Metadata: 19:06 - ...
+GOS.Austerhola: 18.11.2023 17:44 - 19:43 Metadata: 16:44 - 18:40
+GOS.Lyngsfjorden: 19.11.2023 10:38 - 13:15 Metadata: 10:02 - 12:07
+Frigg.Lyngsfjorden 19.11.2023 10:34 - 13:23 Metadata: 10:02 - 12:07
+Frigg.Lyngsfjorden.RMP/noise 19.11.2023 14:30 - 15:13:45 Metadata: 13:30 - 19:19 Missing data!!!
+GOS.Austerhola 21.11.2023 20:59 - 22:59:30 Metadata: 20:03 - 21:48
+GOS.Malangen 21.11.2023 00:37 - 02:46:30 Metadata: 23:30-01:35
+
+Missing data: 19.11.2023 15:13-20:20
+
+
 ## GOS Navigational data
-Run the readnavigation.py to process the GOS navigation data.
+Run the readnavigation.py to process the GOS navigation data. This is handled through Rabeas scripts.
 
 ## GOS and Frigg time intervals per treatment
 Run readmetadata.py to prepare time intervals and treatments to a pandas dataframe. Writes the result to a pickle file readmetadata.pk
