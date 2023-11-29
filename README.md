@@ -24,8 +24,13 @@ Run readmetadata.py to prepare time intervals and treatments to a pandas datafra
 ## REad the noise files from LSSS
 Run analyzenoise.py. This generates a Pandas data frame for the noise estimates as a function of time. Writes the results to a pickle file analyzenoise.pk
 
+## Merge files
+Run mergedfs.py to merge the noise data and the metadata and save to parquet.
 
+## Plot in R
+Run analyze.r to plot the figures in R (ggplot).
 
+# Variables
 |Variable|Values|Description|
 |-|-|-|
 |Frequency | 18, 38, 120, 200, 333 | Echosounder channel |
