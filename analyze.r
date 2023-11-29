@@ -18,7 +18,18 @@ ggplot(data_sub1, aes(x=Platform, y=noiseAverage, fill=factor(Speedbin))) +
     geom_boxplot() + facet_wrap(~ Seastate)
 ggsave('SeastatePlatformDataquality.png')
 
-### Lyngsfjorden detailed experiments
+### Is the direction to wind important?
+data_sub1 <- data_sub1[!is.na(data_sub1['Location']=='Austerhola'),]
+summary(data_sub1)
+ggplot(data_sub1, aes(x=Platform, y=noiseAverage, fill=factor(Speedbin))) + 
+    geom_boxplot() + facet_wrap(~ Seastate)
+ggsave('SeastatePlatformDataquality.png')
+
+
+### Is there a pattern in frequency?
+
+
+### Lyngsfjorden detailed experiments (varying RPM, towing and propeller disengaged)
 LCW38 <- data[(data['Mode']=='CW' & data['Frequency']=='38' & data['Location']=='Lyngsfjorden'),]
 LCW38 <- LCW38[!is.na(LCW38['RPM']),]
 summary(LCW38)
@@ -33,4 +44,5 @@ ggsave('RPMvsSpeed.png')
 ### RPM test while propeller is disenganged
 LCW38_rpm <- LCW38[LCW38['Platform'] == 'Frigg' & LCW38['Experiment'] == 'RPMtest',]
 summary(LCW38_rpm)
+
 
