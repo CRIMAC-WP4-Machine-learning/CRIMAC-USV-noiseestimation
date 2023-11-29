@@ -19,7 +19,8 @@ def cleanmetadata(fil):
     # Speedbin is not in data
     df['Speedbin'] = 0
     df.loc[np.append(False, np.diff(df['Leg']) < 0), 'Speedbin'] = 1
-    df['Speedbin'] = (np.cumsum(df['Speedbin'])-df['Coverage']*4)*2+1
+    df['Speedbin'] = 8 - (np.cumsum(df['Speedbin'])-df['Coverage']*4)*2+1
+    print(df['Speedbin'].unique)
     df['Headingtowind'] =  df['true_wind_dir'] - df['cog']
     # Drop data
     df = df.drop(['cog', 'index'], axis=1)
