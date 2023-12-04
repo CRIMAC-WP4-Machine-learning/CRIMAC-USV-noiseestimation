@@ -23,7 +23,7 @@ def readluf(noisedata):
     M = df['Time'] // 10000 - H*100
     S = (df['Time'] - H*1000000 - M*10000)/100
     sec = (H*3600 + M*60 + S)
-    df['sec'] = sec
+    df['sec'] = sec + 3600
     df['td'] = df['sec'].apply(lambda x: timedelta(seconds=x))
     df['t'] = pd.to_datetime(df[['year', 'month', 'day']]) + df['td']
 

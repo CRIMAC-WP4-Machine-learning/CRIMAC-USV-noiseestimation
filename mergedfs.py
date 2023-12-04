@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 # Import data
 df_intervals = pd.read_pickle('readmetadata.pk')
 df_data = pd.read_pickle('analyzenoise.pk')
-df_bot = pd.read_pickle('svdata.pk')
+df_bot = pd.read_pickle('readSv.pk')
 df_bot['Location'].unique()
 
 # Testing
@@ -123,5 +123,12 @@ plt.show()
 bot = bot.set_index('Time')
 bot[(bot['Mode'] == 'CW') & (bot['Frequency'] == '38')].groupby([
     'Platform', 'Location', 'Coverage', 'Leg', 'Speedbin'])[
+        'sa'].plot(legend=True)
+plt.show()
+
+# Rådata har riktig tidsintervall, men den over manglar ein time. UTC problem?
+df_bot = df_bot.set_index('Time')
+df_bot[(df_bot['Mode'] == 'CW') & (df_bot['Frequency'] == '38')].groupby([
+    'Platform', 'Location'])[
         'sa'].plot(legend=True)
 plt.show()
