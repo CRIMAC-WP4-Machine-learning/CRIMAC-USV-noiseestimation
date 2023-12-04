@@ -3,11 +3,13 @@ library(ggplot2)
 
 ### Read data
 data = read_parquet("data.pk")
+
+data_bot = read_parquet('data_botsv.pk')
 data['Seastate'] = data['Location']
 data['Seastate'][data['Location'] == 'Malangen'] = 'BF2-3'
 data['Seastate'][data['Location'] == 'Lyngsfjorden'] = 'BF2'
 data['Seastate'][data['Location'] == 'Austerhola'] = 'BF4'
-colnames(data)
+colnames(data_bot)
 
 ### Select CW and 38kHz and plot the Dataquality experiment
 data_sub1 <- data[(data['Mode']=='CW' & data['Frequency']=='38' &
@@ -45,4 +47,13 @@ ggsave('RPMvsSpeed.png')
 LCW38_rpm <- LCW38[LCW38['Platform'] == 'Frigg' & LCW38['Experiment'] == 'RPMtest',]
 summary(LCW38_rpm)
 
+### analyze the bottom integrals
+data_bot1 <- data_bot[(data_bot['Experiment'] == 'Dataquality'),]
+data_bot1 <- data_bot1[!is.na(data_bot1['Platform']),]
+summary(data_bot1)
+
+#data_bot1 <- data_bot1[(data_bot1['Location'] == 'Austerhola'),]
+ggplot(data_bot1, aes(x=factor(Speedbin), y=sa, fill=factor(Platform))) + 
+    geom_boxplot() + facet_wrap(~ Location)
+ggsave('IntegratedBottom.png')
 

@@ -7,13 +7,14 @@ import os
 # These files are found under /data/cruisedata/
 
 # List all data files
-dr = ['/mnt/c/DATA/cruisedata/S2023301002_PFRIGG_10318/',
-      '/mnt/c/DATA/cruisedata/S2023001016_PGOSARS_4174/']
 drr = 'ACOUSTIC/LSSS/EXPORT/EchogramPlot/'
-noisedata = [dr[0]+drr+fil for fil in os.listdir(dr[0]+drr) if fil.split('.')[
-    1] == 'json']
-noisedata = noisedata + [dr[1]+drr+fil for fil in os.listdir(
-    dr[1]+drr) if fil.split('.')[1] == 'json']
+dr = ['/mnt/c/DATA/cruisedata/S2023301002_PFRIGG_10318/'+drr,
+      '/mnt/c/DATA/cruisedata/S2023001016_PGOSARS_4174/'+drr]
+
+noisedata = []
+for _d in dr:
+    noisedata = noisedata + [_d+fil for fil in os.listdir(
+        _d) if fil.split('.')[1] == 'json']
 
 # Read data files
 DF = pd.DataFrame()
@@ -68,23 +69,25 @@ DF.loc[(DF['Location'] == 'Octagon2') & (
     DF['Platform'] == 'GOSars'), 'Location'] =  'Austerhola'
 DF.loc[(DF['Location'] == 'Octagon3') & (
     DF['Platform'] == 'GOSars'), 'Location'] =  'Malangen'
+
 DF.loc[(DF['Location'] == 'Octagon1') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Malangen'
 DF.loc[(DF['Location'] == 'Octagon2') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
 DF.loc[(DF['Location'] == 'Drifting') & (
     DF['Platform'] == 'Frigg'), 'Location'] = 'Austerhola'
-DF.loc[DF['Location'] == 'RPMnoise','Location'] = 'Lyngsfjorden'
+DF.loc[DF['Location'] == 'RPMnoise', 'Location'] = 'Lyngsfjorden'
 
 DF[(DF['Mode'] == 'CW') & (DF['Frequency'] == '38')].groupby([
     'Platform', 'Location'])['noiseAverage'].plot(legend=True)
 plt.show()
 
+
 DF = DF.reset_index()
 DF = DF.rename(columns = {'index': 'Time'})
 DF = DF.sort_values(by=['Time'])
-
 DF.to_pickle('analyzenoise.pk')
+DF['Location'].unique()
 
 
 '''

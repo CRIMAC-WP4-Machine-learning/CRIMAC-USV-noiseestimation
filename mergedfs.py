@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 # Import data
 df_intervals = pd.read_pickle('readmetadata.pk')
 df_data = pd.read_pickle('analyzenoise.pk')
+df_bot = pd.read_pickle('svdata.pk')
+df_bot['Location'].unique()
 
 # Testing
 '''
@@ -31,11 +33,15 @@ df_intervals_GOSars = df_intervals[df_intervals['Platform'] == 'GOSars']
 df_intervals_Frigg = df_intervals[df_intervals['Platform'] == 'Frigg']
 
 # Delete column names that will be duplicates
-df_intervals_GOSars = df_intervals_GOSars.drop(columns = ['Platform', 'Location'])
-df_intervals_Frigg = df_intervals_Frigg.drop(columns = ['Platform', 'Location'])
+df_intervals_GOSars = df_intervals_GOSars.drop(columns = [
+    'Platform', 'Location'])
+df_intervals_Frigg = df_intervals_Frigg.drop(columns = [
+    'Platform', 'Location'])
 
 df_data_GOSars = df_data[df_data['Platform'] == 'GOSars']
 df_data_Frigg = df_data[df_data['Platform'] == 'Frigg']
+df_bot_GOSars = df_bot[df_bot['Platform'] == 'GOSars']
+df_bot_Frigg = df_bot[df_bot['Platform'] == 'Frigg']
 
 # Merge DataFrames on the 'timestamp' column
 # This is similar to a left-join except that we match on nearest key rather
@@ -46,6 +52,13 @@ merged_df_GOSars = pd.merge_asof(df_data_GOSars, df_intervals_GOSars,
 merged_df_Frigg = pd.merge_asof(df_data_Frigg, df_intervals_Frigg,
                                 left_on='Time', right_on='Starttime',
                                 direction='backward')
+
+merged_bot_GOSars = pd.merge_asof(df_bot_GOSars, df_intervals_GOSars,
+                                  left_on='Time', right_on='Starttime',
+                                  direction='backward')
+merged_bot_Frigg = pd.merge_asof(df_bot_Frigg, df_intervals_Frigg,
+                                 left_on='Time', right_on='Starttime',
+                                 direction='backward')
 
 '''
 # Test data for sanity checking the algorithm
@@ -82,16 +95,19 @@ merged_df_GOSars.loc[merged_df_GOSars['Time'] > merged_df_GOSars[
     'Stoptime'], mcol] = np.NaN
 merged_df_Frigg.loc[merged_df_Frigg['Time'] > merged_df_Frigg[
     'Stoptime'], mcol] = np.NaN
+merged_bot_GOSars.loc[merged_bot_GOSars['Time'] > merged_bot_GOSars[
+    'Stoptime'], mcol] = np.NaN
+merged_bot_Frigg.loc[merged_bot_Frigg['Time'] > merged_bot_Frigg[
+    'Stoptime'], mcol] = np.NaN
 
 # Finally we concatenate Frigg and GOSars data frames
 df = pd.concat([merged_df_Frigg, merged_df_GOSars], axis=0)
+bot = pd.concat([merged_bot_Frigg, merged_bot_GOSars], axis=0)
 
 # And we'll use Time as indices
 df.to_parquet('data.pk')
+bot.to_parquet('data_botsv.pk')
 df.columns
-
-df_med = df.groupby(['Mode','Frequency','Platform', 'Location', 'Coverage', 'Leg', 'Speedbin']).median()
-df_med.to_parquet('mediandata.pk')
 
 df = df.set_index('Time')
 df[(df['Mode'] == 'CW') & (df['Frequency'] == '38')].groupby([
@@ -104,3 +120,8 @@ df[(df['Mode'] == 'CW') & (df['Frequency'] == '38')].groupby([
         'noiseAverage'].plot(legend=True)
 plt.show()
 
+bot = bot.set_index('Time')
+bot[(bot['Mode'] == 'CW') & (bot['Frequency'] == '38')].groupby([
+    'Platform', 'Location', 'Coverage', 'Leg', 'Speedbin'])[
+        'sa'].plot(legend=True)
+plt.show()
