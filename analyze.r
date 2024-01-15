@@ -16,6 +16,13 @@ data_bot['Seastate'][data_bot['Location'] == 'Lyngsfjorden'] = 'BF2'
 data_bot['Seastate'][data_bot['Location'] == 'Austerhola'] = 'BF4'
 colnames(data_bot)
 
+data_tr = read_parquet('data_tr.pk')
+data_tr['Seastate'] = data_tr['Location']
+data_tr['Seastate'][data_tr['Location'] == 'Malangen'] = 'BF2-3'
+data_tr['Seastate'][data_tr['Location'] == 'Lyngsfjorden'] = 'BF2'
+data_tr['Seastate'][data_tr['Location'] == 'Austerhola'] = 'BF4'
+colnames(data_tr)
+
 ### Select CW and 38kHz and plot the Dataquality experiment
 data_sub1 <- data[(data['Mode']=='CW' & data['Frequency']=='38' &
                    data['Experiment'] == 'Dataquality'),]
@@ -64,6 +71,15 @@ data_bot3 <- data_bot2[(data_bot2['Location'] == 'Austerhola')|(data_bot2['Locat
 
 #data_bot1 <- data_bot1[(data_bot1['Location'] == 'Austerhola'),]
 ggplot(data_bot3, aes(x=factor(Speedbin), y=10*log10(sa), fill=factor(Platform))) + 
-    geom_boxplot() + facet_wrap(~ Location)
+    geom_boxplot() + facet_wrap(~ Seastate)
 ggsave('IntegratedBottom.png')
 
+###
+### Analyse roll data
+###
+
+data_tr <- data_tr[!is.na(data_tr['Seastate']),]
+data_tr <- data_tr[!is.na(data_tr['Speedbin']),]
+ggplot(data_tr, aes(x=factor(Speedbin), y=roll, fill=factor(Leg))) + 
+    geom_boxplot() + facet_wrap(~ Seastate)
+ggsave('Rolldata.png')

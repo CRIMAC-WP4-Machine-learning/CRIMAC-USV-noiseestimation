@@ -4,10 +4,12 @@ import matplotlib.pyplot as plt
 
 # Import data
 df_intervals = pd.read_pickle('readmetadata.pk')
+df_intervals.columns
+
 df_data = pd.read_pickle('analyzenoise.pk')
 df_bot = pd.read_pickle('readSv.pk')
 df_bot['Location'].unique()
-
+df_tr = pd.read_pickle('readfriggnavigation.pk')
 # Testing
 '''
 T0 = df_intervals[df_intervals['Experiment'] == 'Towing']['Starttime'].values
@@ -30,12 +32,12 @@ df_data.columns
 
 # We need to split the data before merging since we merge by timestamps
 df_intervals_GOSars = df_intervals[df_intervals['Platform'] == 'GOSars']
-df_intervals_Frigg = df_intervals[df_intervals['Platform'] == 'Frigg']
+df_intervals_Frigg_0 = df_intervals[df_intervals['Platform'] == 'Frigg']
 
 # Delete column names that will be duplicates
 df_intervals_GOSars = df_intervals_GOSars.drop(columns = [
     'Platform', 'Location'])
-df_intervals_Frigg = df_intervals_Frigg.drop(columns = [
+df_intervals_Frigg = df_intervals_Frigg_0.drop(columns = [
     'Platform', 'Location'])
 
 df_data_GOSars = df_data[df_data['Platform'] == 'GOSars']
@@ -59,6 +61,13 @@ merged_bot_GOSars = pd.merge_asof(df_bot_GOSars, df_intervals_GOSars,
 merged_bot_Frigg = pd.merge_asof(df_bot_Frigg, df_intervals_Frigg,
                                  left_on='Time', right_on='Starttime',
                                  direction='backward')
+
+# The til roll data is not complete, subset
+#df_tr_int = df_intervals_Frigg[df_intervals_Frigg['Starttime'] < df_tr['Time'].iloc[-1]]
+
+merged_tr_Frigg = pd.merge_asof(df_tr.dropna(), df_intervals_Frigg_0,
+                                left_on='Time', right_on='Starttime',
+                                direction='backward')
 
 '''
 # Test data for sanity checking the algorithm
@@ -99,14 +108,22 @@ merged_bot_GOSars.loc[merged_bot_GOSars['Time'] > merged_bot_GOSars[
     'Stoptime'], mcol] = np.NaN
 merged_bot_Frigg.loc[merged_bot_Frigg['Time'] > merged_bot_Frigg[
     'Stoptime'], mcol] = np.NaN
+merged_tr_Frigg.loc[merged_tr_Frigg['Time'] > merged_tr_Frigg[
+    'Stoptime'], mcol] = np.NaN
 
 # Finally we concatenate Frigg and GOSars data frames
 df = pd.concat([merged_df_Frigg, merged_df_GOSars], axis=0)
 bot = pd.concat([merged_bot_Frigg, merged_bot_GOSars], axis=0)
+tr = merged_tr_Frigg
 
 # And we'll use Time as indices
 df.to_parquet('data.pk')
 bot.to_parquet('data_botsv.pk')
+tr.to_pickle('data_tr.pk')
+tr['Time'] = tr.Time.dt.ceil(freq='us')
+tr.to_parquet('data_tr.pk')
+
+tr.dtypes
 df.columns
 
 df = df.set_index('Time')
@@ -131,4 +148,11 @@ df_bot = df_bot.set_index('Time')
 df_bot[(df_bot['Mode'] == 'CW') & (df_bot['Frequency'] == '38')].groupby([
     'Platform', 'Location'])[
         'sa'].plot(legend=True)
+plt.show()
+
+tr = tr.set_index('Time')
+tr.columns
+tr.groupby([
+    'Coverage', 'Leg', 'Speedbin'])[
+        'roll'].plot(legend=True)
 plt.show()

@@ -14,6 +14,8 @@ GOS.Malangen 21.11.2023 00:37 - 02:46:30 Metadata: 23:30-01:35
 
 Missing data: 19.11.2023 15:13-20:20
 
+## Frigg Navigational datda
+readfriggnavigation.py REad and parse the til and roll date as a functionf of time. Stores the result in a pickle.
 
 ## GOS Navigational data
 Run the readnavigation.py to process the GOS navigation data. This is handled through Rabeas scripts.
